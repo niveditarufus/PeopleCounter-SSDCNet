@@ -20,9 +20,12 @@ from Val import test_phase
 def getFrame(vidcap, sec, count):
     vidcap.set(cv2.CAP_PROP_POS_MSEC,sec*1000)
     hasFrames,image = vidcap.read()
+
+    # print(image.shape)
     if hasFrames:
-        # cv2.imwrite('/frames/f_'+str(count)+'.jpg', image)
-        image = Image.fromarray(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        image = Image.fromarray(image)
+
     # if hasFrames:
     #     cv2.imwrite("image"+str(count)+".jpg", image)     # save frame as JPG file
     return hasFrames, image
@@ -96,3 +99,4 @@ def main(opt):
             print("End of video Feed")
             break;
     vidcap.release()
+    cv2.destroyAllWindows()
