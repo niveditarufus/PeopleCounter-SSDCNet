@@ -10,21 +10,22 @@ from IOtools import get_config_str
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Dataset_setting')
-    parser.add_argument('--dataset', default='SHB', help='choose dataset, SHA,SHB,QNRF')
+    parser = argparse.ArgumentParser(description='model_setting')
+    parser.add_argument('--model', default='model1', help='choose model: model1, model2, model3')
+    parser.add_argument('--video', help='Specify a video path')
     args = parser.parse_args()
-    dataset_idxlist = {'SHA':0,'SHB':1,'QNRF':2}
-    dataset_list = ['SH_partA','SH_partB','UCF-QNRF_ECCV18']    
-    dataset_max = [[22],
+    model_idxlist = {'model1':0,'model2':1,'model3':2}
+    model_list = ['model1', 'model2', 'model3']    
+    model_max = [[22],
                     [7],
                     [8]]
-    dataset_choose = [dataset_idxlist[args.dataset] ]
-    for di in dataset_choose:
+    model_choose = [model_idxlist[args.model] ]
+    for di in model_choose:
         opt = dict()
-        opt['dataset'] = dataset_list[di]
-        opt['max_list'] = dataset_max[di]
+        opt['model'] = model_list[di]
+        opt['max_list'] = model_max[di]
         # step1: Create root path for dataset
-        opt['root_dir'] = os.path.join(r'data',opt['dataset'])
+        opt['video'] = os.path.join(args.video )
         opt['num_workers'] = 0
         opt['IF_savemem_train'] = False
         opt['IF_savemem_test'] = False
@@ -41,5 +42,5 @@ if __name__ == '__main__':
         opt['partition'] = 'two_linear'
         opt['step'] = 0.5
         # here create model path
-        opt['model_path'] = os.path.join('model',args.dataset)
+        opt['model_path'] = os.path.join('model',args.model)
         main(opt)

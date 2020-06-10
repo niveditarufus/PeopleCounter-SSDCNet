@@ -29,14 +29,15 @@ def getFrame(vidcap, sec, count):
 
 def main(opt):
     # save folder
-    save_folder = opt['model_path'] 
+    model_path = opt['model_path'] 
     # =============================================================================
     # inital setting
     # =============================================================================
     # 1.Initial setting
     # --1.1 dataset setting
-    dataset = opt['dataset']
-    root_dir = opt['root_dir']
+    # dataset = opt['dataset']
+    # root_dir = opt['root_dir']
+    video = opt['video']
     num_workers = opt['num_workers']
     # tar_subsubdir = 'gtdens'
     transform_test = []
@@ -51,9 +52,9 @@ def main(opt):
     #test settings
     # img_dir = os.path.join(root_dir,'test',img_subsubdir)
     # tar_dir = os.path.join(root_dir,'test',tar_subsubdir)
-    rgb_dir = os.path.join(root_dir,'rgbstate.mat')
+    rgb_dir = os.path.join(model_path,'rgbstate.mat')
 
-    vidcap = cv2.VideoCapture('demo2.avi')
+    vidcap = cv2.VideoCapture(video)
     
     sec = 0
     frameRate = 1#//it will capture image in each 0.5 second
@@ -87,7 +88,7 @@ def main(opt):
                 all_state_dict = torch.load(mod_path)
                 net.load_state_dict(all_state_dict['net_state_dict'])
                 tmp_epoch_num = all_state_dict['tmp_epoch_num']
-                log_save_path = os.path.join(save_folder,'log-epoch-min[%d]-%s.txt' \
+                log_save_path = os.path.join(model_path,'log-epoch-min[%d]-%s.txt' \
                     %(tmp_epoch_num+1,opt['parse_method']) )
                 # test
                 test_log = test_phase(opt,net,testloader,log_save_path=log_save_path)
