@@ -7,13 +7,42 @@ import cv2
 from PIL import Image
 import os
 import numpy as np
-from time import time
+from time import time, sleep
 import math
 import pandas as pd
 import csv
 from load_data_V2 import Countmap_Dataset
 from Network.SSDCNet import SSDCNet_classify
 from Val import test_phase
+
+import cv2, queue, threading
+
+# bufferless VideoCapture
+# class VideoCapture:
+
+#   def __init__(self, name):
+#     self.cap = cv2.VideoCapture(name)
+#     self.q = queue.Queue()
+#     t = threading.Thread(target=self._reader)
+#     t.daemon = True
+#     t.start()
+
+#   # read frames as soon as they are available, keeping only most recent one
+#   def _reader(self):
+#     while True:
+#       ret, frame = self.cap.read()
+#       if not ret:
+#         break
+#       if not self.q.empty():
+#         try:
+#           self.q.get_nowait()   # discard previous (unprocessed) frame
+#         except Queue.Empty:
+#           pass
+#       self.q.put(frame)
+
+#   def read(self):
+#     return self.q.get()
+
 
 
 def test(frame, opt, rgb_dir, transform_test, num_workers, label_indice, model_path):
@@ -90,6 +119,21 @@ def main(opt):
         else:
             print("End of Video feed or Error in streaming")
             break
+
+    # cap = VideoCapture(0)
+    # while True:
+    #     sleep(.5)   # simulate time between events
+    #     frame = cap.read()
+    #     if frame is not None:
+    #         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    #         print(frame.shape)
+    #         test(frame, opt, rgb_dir, transform_test, num_workers, label_indice, model_path)
+    #         cv2.imshow("frame", frame)
+    #         if chr(cv2.waitKey(1)&255) == 'q':
+    #             break
+    #     else:
+    #         print("end")
+    #         break
 
     end = time()
     print(end - start)   
