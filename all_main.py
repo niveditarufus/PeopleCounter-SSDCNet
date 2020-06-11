@@ -25,7 +25,16 @@ if __name__ == '__main__':
         opt['model'] = model_list[di]
         opt['max_list'] = model_max[di]
         # step1: Create root path for dataset
-        opt['video'] = os.path.join('videos', args.video )
+        if args.video.startswith('http'):
+            opt['read_ipstream'] = True
+        else:
+            opt['read_ipstream'] = False
+
+        if opt['read_ipstream']:
+            opt['video'] = args.video
+            opt['skip_frames'] = 30
+        else:
+            opt['video'] = os.path.join('videos', args.video )
         opt['num_workers'] = 0
         opt['IF_savemem_train'] = False
         opt['IF_savemem_test'] = False
