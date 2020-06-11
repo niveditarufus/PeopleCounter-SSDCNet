@@ -25,7 +25,7 @@ if __name__ == '__main__':
         opt['model'] = model_list[di]
         opt['max_list'] = model_max[di]
         # step1: Create root path for dataset
-        opt['video'] = os.path.join(args.video )
+        opt['video'] = os.path.join('videos', args.video )
         opt['num_workers'] = 0
         opt['IF_savemem_train'] = False
         opt['IF_savemem_test'] = False
@@ -43,4 +43,5 @@ if __name__ == '__main__':
         opt['step'] = 0.5
         # here create model path
         opt['model_path'] = os.path.join('model',args.model)
+
         main(opt)
