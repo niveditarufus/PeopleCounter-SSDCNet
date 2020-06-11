@@ -4,6 +4,7 @@ import torch
 import torch.optim as optim
 from torch.utils.data import  DataLoader
 import torch.nn.functional as F
+import torch
 
 import os
 import numpy as np
@@ -12,8 +13,6 @@ import math
 import pandas as pd
 import csv
 import math
-import torch
-from IOtools import txt_write 
 from Network.class_func import get_local_count
 
 

@@ -5,7 +5,6 @@ import numpy as np
 import argparse
 
 from main_process import main
-from IOtools import get_config_str
 
 
 

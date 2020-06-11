@@ -11,10 +11,6 @@ from time import time
 import math
 import pandas as pd
 import csv
-import cv2
-import requests
-import imutils
-from IOtools import txt_write,get_config_str
 from load_data_V2 import Countmap_Dataset
 from Network.SSDCNet import SSDCNet_classify
 from Val import test_phase
