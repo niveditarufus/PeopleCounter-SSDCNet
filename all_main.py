@@ -24,6 +24,8 @@ if __name__ == '__main__':
         opt = dict()
         opt['model'] = model_list[di]
         opt['max_list'] = model_max[di]
+        opt['skip_frames'] =  45
+
         # step1: Create root path for dataset
         if args.video.startswith('http'):
             opt['read_ipstream'] = True
@@ -32,7 +34,6 @@ if __name__ == '__main__':
 
         if opt['read_ipstream']:
             opt['video'] = args.video
-            opt['skip_frames'] = 30
         else:
             opt['video'] = os.path.join('videos', args.video )
         opt['num_workers'] = 0
