@@ -1,4 +1,4 @@
-# PeopleCounter-SS-DCNet
+# PeopleCounter with SS-DCNet
 
 ## Introduction
 This is a people counter module  that is implemented using SS-DCNet. This module is equipped to to give the count of people present in a frame captured from a video.
