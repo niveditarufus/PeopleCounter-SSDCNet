@@ -3,7 +3,6 @@
 import os
 import torch
 import numpy as np
-import glob#use glob.glob to get special flielist
 import scipy.io as sio#use to import mat as dic,data is ndarray
 # load image
 from PIL import Image

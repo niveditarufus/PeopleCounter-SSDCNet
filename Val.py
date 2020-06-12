@@ -10,8 +10,6 @@ import os
 import numpy as np
 from time import time
 import math
-import pandas as pd
-import csv
 import math
 from Network.class_func import get_local_count
 

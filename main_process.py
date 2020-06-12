@@ -11,11 +11,10 @@ from time import time, sleep
 import math
 import pandas as pd
 import csv
-from load_data_V2 import Countmap_Dataset
+from load_data import Countmap_Dataset
 from Network.SSDCNet import SSDCNet_classify
 from Val import test_phase
-
-import cv2, queue, threading
+import queue, threading
 
 # bufferless VideoCapture
 # class VideoCapture:
