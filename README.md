@@ -13,7 +13,7 @@ numpy==1.18.2
 scipy==1.4.1
 
 ### Inputs
-1. **Model:** There are three pretrained models available [here](). They were trained by the authors of the the [paper]() on Shanghai Dataset(A, B) and QRNF dataset.
+1. **Model:** There are three pretrained models available [here](https://drive.google.com/drive/folders/1i7oVrxz8w4m7t0zQI7-qtv2__M0OSVp3?usp=sharing). They were trained by the authors of the the [paper]() on Shanghai Dataset(A, B) and QRNF dataset.
 2. **Video:** It can be a video file stored in the videos folder or a URL to the video.
 
 ### Quick Start
@@ -32,5 +32,5 @@ usage: python3 Run.py
 `python3 Run.py --model model1 --video m1.mp4`
 
 ### References
-[SS-DCNet]()
-[code]()
+[SS-DCNet](https://arxiv.org/abs/2001.01886)  
+[code](https://github.com/xhp-hust-2018-2011/SS-DCNet)
