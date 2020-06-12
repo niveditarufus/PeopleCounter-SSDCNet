@@ -13,7 +13,7 @@ numpy==1.18.2
 scipy==1.4.1
 
 ### Inputs
-1. **Model:** There are three pretrained models available [here](https://drive.google.com/drive/folders/1i7oVrxz8w4m7t0zQI7-qtv2__M0OSVp3?usp=sharing). They were trained by the authors of the the [paper]() on Shanghai Dataset(A, B) and QRNF dataset.
+1. **Model:** There are three pretrained models available [here](https://drive.google.com/drive/folders/1i7oVrxz8w4m7t0zQI7-qtv2__M0OSVp3?usp=sharing). They were trained by the authors of the the [paper](https://arxiv.org/abs/2001.01886) on Shanghai Dataset(A, B) and QRNF dataset.
 2. **Video:** It can be a video file stored in the videos folder or a URL to the video.
 
 ### Quick Start
@@ -26,7 +26,7 @@ scipy==1.4.1
 `pip3 install -r requirements.txt`  
 ##### 4. Run Demo:      
 usage: python3 Run.py  
-				[--model PATH TO CAFFE PRE-TRAINED MODEL]  
+				[--model MODEL]  
 				[--video VIDEO FILE/URL]  
 ###### Example:  
 `python3 Run.py --model model1 --video m1.mp4`
