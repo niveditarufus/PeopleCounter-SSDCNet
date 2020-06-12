@@ -25,7 +25,7 @@ scipy==1.4.1
 ##### 3. Install all dependencies required, run:  
 `pip3 install -r requirements.txt`  
 ##### 4. Run Demo:      
-usage: python3 Run.py  
+**Usage:** python3 Run.py  
 				[--model MODEL]  
 				[--video VIDEO FILE/URL]  
 ###### Example:  
