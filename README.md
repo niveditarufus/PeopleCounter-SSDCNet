@@ -4,7 +4,7 @@
 This is a people counter module  that is implemented using SS-DCNet. This module is equipped to to give the count of people present in a frame captured from a video.
 
 ## Dependencies
-Python>=3.6  
+Python==3.6  
 torch==1.4.0  
 torchvision==0.5.0  
 opencv==4.2.0.34  
