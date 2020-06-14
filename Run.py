@@ -22,17 +22,22 @@ if __name__ == '__main__':
         opt['model'] = model_list[di]
         opt['max_list'] = model_max[di]
         opt['skip_frames'] =  45
+        opt['start_webcam'] = False
+        opt['read_ipstream'] = None
+
+        if args.video==None:
+            opt['start_webcam'] = True
 
         # step1: Create root path for dataset
-        if args.video.startswith('http'):
+        elif args.video.startswith('http'):
             opt['read_ipstream'] = True
+            opt['video'] = args.video
+
         else:
             opt['read_ipstream'] = False
-
-        if opt['read_ipstream']:
-            opt['video'] = args.video
-        else:
             opt['video'] = os.path.join('videos', args.video )
+
+           
         opt['num_workers'] = 0
         opt['IF_savemem_train'] = False
         opt['IF_savemem_test'] = False

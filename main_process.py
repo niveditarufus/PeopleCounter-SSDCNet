@@ -15,8 +15,11 @@ from load_data import Countmap_Dataset
 from Network.SSDCNet import SSDCNet_classify
 from Val import test_phase
 import queue, threading
+from imutils.video import VideoStream
+import imutils
 
-# bufferless VideoCapture
+
+# # bufferless VideoCapture
 # class VideoCapture:
 
 #   def __init__(self, name):
@@ -79,7 +82,6 @@ def main(opt):
     # =============================================================================
     # Initial setting
     read_ipstream = opt['read_ipstream']
-    video = opt['video']
     num_workers = opt['num_workers']
     transform_test = []
     
@@ -89,52 +91,45 @@ def main(opt):
     label_indice = np.concatenate( (add,label_indice) )
     opt['label_indice'] = label_indice
     opt['class_num'] = label_indice.size+1
+    skip_frames = opt['skip_frames']
     
     #test settings
     rgb_dir = os.path.join(model_path,'rgbstate.mat')
-    vidcap = cv2.VideoCapture(video)
-    skip_frames = opt['skip_frames']
+    
 
-    if not read_ipstream:
-        print('Loading video from file...')
-    else:
-        print('Loading from the given URL...')
-
-    success = True
-    total_frames = 0
     start = time()
-    while success:
-        success,frame = vidcap.read()
-        if success:
+    if not opt['start_webcam']:
+        video = opt['video']
+        vidcap = cv2.VideoCapture(video)
+        if not read_ipstream:
+            print('Loading video from file...')
+        else:
+            print('Loading from the given URL...')
+    else:
+        print("[INFO] starting video stream...")
+        vidcap = VideoStream(src=0).start()
+        sleep(2.0)
+
+    total_frames = 0
+    while True:
+        if not opt['start_webcam']:
+            frame = vidcap.read()[1]
+        else:
+            frame = vidcap.read()
+        if frame is not None:
+            frame = imutils.resize(frame, width=500)
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             if(total_frames % skip_frames == 0):
                 test(frame, opt, rgb_dir, transform_test, num_workers, label_indice, model_path)
-                cv2.imshow('frames captured ',frame)
-
+                cv2.imshow('frame ',frame)
                 if cv2.waitKey(25) & 0xFF == ord('q'):
                     break
-                
             total_frames += 1
         else:
             print("End of Video feed or Error in streaming")
+            vidcap.release()
             break
-
-    # cap = VideoCapture(0)
-    # while True:
-    #     sleep(.5)   # simulate time between events
-    #     frame = cap.read()
-    #     if frame is not None:
-    #         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    #         print(frame.shape)
-    #         test(frame, opt, rgb_dir, transform_test, num_workers, label_indice, model_path)
-    #         cv2.imshow("frame", frame)
-    #         if chr(cv2.waitKey(1)&255) == 'q':
-    #             break
-    #     else:
-    #         print("end")
-    #         break
 
     end = time()
     print(end - start)   
-    vidcap.release()
     cv2.destroyAllWindows()
