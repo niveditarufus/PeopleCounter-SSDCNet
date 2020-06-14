@@ -69,7 +69,8 @@ def test(frame, opt, rgb_dir, transform_test, num_workers, label_indice, model_p
         tmp_epoch_num = all_state_dict['tmp_epoch_num']
         log_save_path = os.path.join(model_path,'log-epoch-min[%d]-%s.txt'%(tmp_epoch_num+1,opt['parse_method']) )
         # test
-        test_log = test_phase(opt,net,testloader,log_save_path=log_save_path)
+        test_log, count = test_phase(opt,net,testloader,log_save_path=log_save_path)
+        return count
     
 
 def main(opt):
@@ -115,7 +116,10 @@ def main(opt):
             # frame = cv2.resize(frame, (480, 480))
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             if(total_frames % skip_frames == 0):
-                test(frame, opt, rgb_dir, transform_test, num_workers, label_indice, model_path)
+                (H, W) = frame.shape[:2]
+                count = test(frame, opt, rgb_dir, transform_test, num_workers, label_indice, model_path)
+                # text = "{}: {}".format("No.of People", count)
+                cv2.putText(frame, 'No.of People: %.0f' % count, (50, 50),cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 2)
                 cv2.imshow('frame ',frame)
                 if cv2.waitKey(25) & 0xFF == ord('q'):
                     break

@@ -44,7 +44,7 @@ def test_phase(opt,net,testloader,log_save_path=None):
     im_num = len(testloader)
     test_dict=dict()
     
-    return test_dict
+    return test_dict, ans
 
 
 
