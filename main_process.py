@@ -15,8 +15,6 @@ from load_data import Countmap_Dataset
 from Network.SSDCNet import SSDCNet_classify
 from Val import test_phase
 import queue, threading
-from imutils.video import VideoStream
-import imutils
 
 
 # # bufferless VideoCapture
@@ -102,22 +100,19 @@ def main(opt):
         video = opt['video']
         vidcap = cv2.VideoCapture(video)
         if not read_ipstream:
-            print('Loading video from file...')
+            print('[INFO]Loading video from file...')
         else:
-            print('Loading from the given URL...')
+            print('[INFO]Loading from the given URL...')
     else:
         print("[INFO] starting video stream...")
-        vidcap = VideoStream(src=0).start()
-        sleep(2.0)
+        vidcap = cv2.VideoCapture(0)
 
     total_frames = 0
     while True:
-        if not opt['start_webcam']:
-            frame = vidcap.read()[1]
-        else:
-            frame = vidcap.read()
+        frame = vidcap.read()[1]
+        
         if frame is not None:
-            frame = imutils.resize(frame, width=500)
+            # frame = cv2.resize(frame, (480, 480))
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             if(total_frames % skip_frames == 0):
                 test(frame, opt, rgb_dir, transform_test, num_workers, label_indice, model_path)
@@ -126,7 +121,8 @@ def main(opt):
                     break
             total_frames += 1
         else:
-            print("End of Video feed or Error in streaming")
+            print("[INFO]End of Video feed or Error in streaming")
+            print("[INFO]Exiting...")
             vidcap.release()
             break
 
