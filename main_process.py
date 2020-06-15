@@ -114,8 +114,8 @@ def main(opt):
         
         if frame is not None:
             # frame = cv2.resize(frame, (480, 480))
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             if(total_frames % skip_frames == 0):
+                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 (H, W) = frame.shape[:2]
                 count = test(frame, opt, rgb_dir, transform_test, num_workers, label_indice, model_path)
                 # text = "{}: {}".format("No.of People", count)
