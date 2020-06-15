@@ -45,9 +45,9 @@ import queue, threading
 
 
 
-def test(frame, opt, rgb_dir, transform_test, num_workers, label_indice, model_path):
+def test(frame, opt, rgb, transform_test, num_workers, label_indice, model_path):
     img = Image.fromarray(frame)
-    testset = Countmap_Dataset(img,rgb_dir,transform=transform_test,\
+    testset = Countmap_Dataset(img,rgb,transform=transform_test,\
     if_test=True, IF_loadmem=opt['IF_savemem_test'])
     testloader = DataLoader(testset, batch_size=opt['test_batch_size'],
                         shuffle=False, num_workers=num_workers)
@@ -92,10 +92,6 @@ def main(opt):
     opt['class_num'] = label_indice.size+1
     skip_frames = opt['skip_frames']
     
-    #test settings
-    rgb_dir = os.path.join(model_path,'rgbstate.mat')
-    
-
     start = time()
     if not opt['start_webcam']:
         video = opt['video']
@@ -108,21 +104,25 @@ def main(opt):
         print("[INFO] starting video stream...")
         vidcap = cv2.VideoCapture(0)
 
-    total_frames = 0
+    total_frames = 1
+    rgb = np.zeros(3)
     while True:
         frame = vidcap.read()[1]
         
         if frame is not None:
-            # frame = cv2.resize(frame, (480, 480))
+            color = cv2.mean(frame)
+            rgb += np.array([color[2], color[1], color[0]])
             if(total_frames % skip_frames == 0):
+
+                rgb = rgb/(skip_frames * 256)
                 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 (H, W) = frame.shape[:2]
-                count = test(frame, opt, rgb_dir, transform_test, num_workers, label_indice, model_path)
-                # text = "{}: {}".format("No.of People", count)
+                count = test(frame, opt, rgb, transform_test, num_workers, label_indice, model_path)
                 cv2.putText(frame, 'No.of People: %.0f' % count, (50, 50),cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 2)
                 cv2.imshow('frame ',frame)
                 if cv2.waitKey(25) & 0xFF == ord('q'):
                     break
+                rgb = np.zeros(3)
             total_frames += 1
         else:
             print("[INFO]End of Video feed or Error in streaming")

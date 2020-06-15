@@ -19,15 +19,14 @@ warnings.filterwarnings("ignore")
 
 class Countmap_Dataset(Dataset):
 
-    def __init__(self, img, rgb_dir,transform=None,if_test = False,\
+    def __init__(self, img, rgb,transform=None,if_test = False,\
         IF_loadmem=False):
         self.IF_loadmem = IF_loadmem #whether to load data in memory
         self.IF_loadFinished = False
         self.image_mem = []
         self.img = img
         self.transform = transform
-        mat = sio.loadmat(rgb_dir)
-        self.rgb = mat['rgbMean'].reshape(1,1,3) 
+        self.rgb = rgb.reshape(1,1,3)
         self.filelist = []
         self.filelist.append(self.img)
         self.dataset_len = 1
