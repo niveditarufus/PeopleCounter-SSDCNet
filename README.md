@@ -28,7 +28,7 @@ scipy==1.4.1
 **Usage:** python3 Run.py [--model MODEL] [--video VIDEO FILE/URL]
 ###### Example:  
 `python3 Run.py --model model3 --video m1.mp4`  
-if a video(file/URL) was not supplied, a reference to the webcam will be grabbed
+if a video(file/URL) was not supplied, a reference to the webcam will be grabbed.
 
 ### References
 [SS-DCNet](https://arxiv.org/abs/2001.01886)  
