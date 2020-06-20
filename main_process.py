@@ -84,8 +84,7 @@ def main(opt):
         if frame is not None:
             color = cv2.mean(frame)
             rgb += np.array([color[2], color[1], color[0]])
-            if(total_frames % skip_frames == 0):
-
+            if(total_frames % 1 == 0):
                 rgb = rgb/(skip_frames * 256)
                 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 (H, W) = frame.shape[:2]
@@ -96,12 +95,12 @@ def main(opt):
                     break
                 rgb = np.zeros(3)
             total_frames += 1
+
         else:
             print("[INFO]End of Video feed or Error in streaming")
             print("[INFO]Exiting...")
             vidcap.release()
             break
-
     end = time()
-    print(end - start)   
+    print(end - start)
     cv2.destroyAllWindows()
