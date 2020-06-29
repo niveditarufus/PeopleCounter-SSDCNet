@@ -19,8 +19,7 @@ def test_phase(opt,net,testloader,log_save_path=None):
         net.eval()
         start = time()
 
-        for j, data in enumerate(testloader):
-            # inputs , labels = data['image'], data['all_num']
+        for data in testloader:
             inputs = data['image']
             inputs = inputs.type(torch.float32)
             inputs = inputs.cuda()
@@ -33,18 +32,13 @@ def test_phase(opt,net,testloader,log_save_path=None):
             del merge_res
 
             pre =  (outputs).sum()
-            ans = torch.round(pre)
             end = time()
             running_frame_rate = opt['test_batch_size'] * float( 1 / (end - start))
-            print('No. of People: %.0f' % ans )
-            # print(end - start)
-            start = time()
-            im_num = len(testloader)
         
     im_num = len(testloader)
     test_dict=dict()
     
-    return test_dict, ans
+    return test_dict, pre.cpu().item()
 
 
 
