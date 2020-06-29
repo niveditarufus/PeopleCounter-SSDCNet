@@ -25,9 +25,9 @@ scipy==1.4.1
 ##### 3. Install all dependencies required, run:  
 `pip3 install -r requirements.txt`  
 ##### 4. Run Demo:      
-**Usage:** python3 Run.py [--model MODEL] [--video VIDEO FILE/URL]
+**Usage:** python3 Run.py [--model MODEL] [--video VIDEO FILE/URL] [--filter METHOD]   
 ###### Example:  
-`python3 Run.py --model model3 --video m1.mp4`  
+`python3 Run.py --model model3 --video m1.mp4 --filter kf`  
 if a video(file/URL) was not supplied, a reference to the webcam will be grabbed.
 
 ### References
