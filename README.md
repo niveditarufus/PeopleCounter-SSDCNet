@@ -30,7 +30,8 @@ scipy==1.4.1
 `python3 Run.py --model model3 --video m1.mp4 --filter kf`  
 if a video(file/URL) was not supplied, a reference to the webcam will be grabbed.  
 
-You can also supply the a list of videos which have overlapping views. This might cause some delay in relaying the count of people, so change the `skip_frames` parameter to balance it.  
+You can also supply the a list of videos which have overlapping views. This might cause some delay in relaying the count of people, so change the `skip_frames` accordingly.  
+###### Example:  
 `python3 Run.py --model model3 --video f1.mp4 f2.mp4 --filter kf`  
 
 
