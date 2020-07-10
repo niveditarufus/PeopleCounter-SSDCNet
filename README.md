@@ -25,10 +25,14 @@ scipy==1.4.1
 ##### 3. Install all dependencies required, run:  
 `pip3 install -r requirements.txt`  
 ##### 4. Run Demo:      
-**Usage:** python3 Run.py [--model MODEL] [--video VIDEO FILE/URL] [--filter METHOD]   
+**Usage:** python3 Run.py [--model MODEL] [--video LIST OF VIDEO FILES/URL] [--filter METHOD]   
 ###### Example:  
 `python3 Run.py --model model3 --video m1.mp4 --filter kf`  
-if a video(file/URL) was not supplied, a reference to the webcam will be grabbed.
+if a video(file/URL) was not supplied, a reference to the webcam will be grabbed.  
+
+You can also supply the a list of videos which have overlapping views. This might reduce the the speed, so change the `skip_frames` parameter to balance it.  
+`python3 Run.py --model model3 --video f1.mp4 f2.mp4 --filter kf`  
+
 
 ### References
 [SS-DCNet](https://arxiv.org/abs/2001.01886)  
