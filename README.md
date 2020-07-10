@@ -37,4 +37,4 @@ You can also supply the a list of videos which have overlapping views. This migh
 
 ### References
 [SS-DCNet](https://arxiv.org/abs/2001.01886)  
-[code](https://github.com/xhp-hust-2018-2011/SS-DCNet)
+[SS-DCNET code](https://github.com/xhp-hust-2018-2011/SS-DCNet)
