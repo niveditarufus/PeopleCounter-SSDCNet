@@ -9,7 +9,7 @@ from main_process import main
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='model_setting')
     parser.add_argument('--model', default='model1', help='choose model: model1, model2, model3')
-    parser.add_argument('--video', help='Specify a video path')
+    parser.add_argument('--video', nargs = '+', help='Specify a video path or multiple video path')
     parser.add_argument('--filter', default = None, help='specify a filtering method if required: kf, mavg ')
     args = parser.parse_args()
     model_idxlist = {'model1':0,'model2':1,'model3':2}
@@ -22,7 +22,7 @@ if __name__ == '__main__':
         opt = dict()
         opt['model'] = model_list[di]
         opt['max_list'] = model_max[di]
-        opt['skip_frames'] =  30
+        opt['skip_frames'] =  20
         opt['start_webcam'] = False
         opt['read_ipstream'] = None
         opt['filter'] = args.filter
@@ -31,13 +31,18 @@ if __name__ == '__main__':
             opt['start_webcam'] = True
 
         # step1: Create root path for dataset
-        elif args.video.startswith('http'):
-            opt['read_ipstream'] = True
-            opt['video'] = args.video
-
         else:
-            opt['read_ipstream'] = False
-            opt['video'] = os.path.join('videos', args.video )
+            opt['read_ipstream']=[]
+            opt['video']=[]
+            for video in args.video:
+
+                if video.startswith('http'):
+                    opt['read_ipstream'].append(True)
+                    opt['video'].append(video)
+
+                else:
+                    opt['read_ipstream'].append(False)
+                    opt['video'].append(os.path.join('videos', video))
 
            
         opt['num_workers'] = 0

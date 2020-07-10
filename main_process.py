@@ -16,6 +16,7 @@ from Network.SSDCNet import SSDCNet_classify
 from Val import test_phase
 import queue, threading
 import matplotlib.pyplot as plt
+import imutils
 
 def KalmanFilter(count_k_1, P_k_1, count, R=0.1):
     count_prior_k = count_k_1
@@ -72,7 +73,7 @@ def main(opt):
     # inital setting
     # =============================================================================
     # Initial setting
-    read_ipstream = opt['read_ipstream']
+    # read_ipstream = opt['read_ipstream']
     num_workers = opt['num_workers']
     transform_test = []
     filter_method = opt['filter']
@@ -88,12 +89,13 @@ def main(opt):
     
     start = time()
     if not opt['start_webcam']:
-        video = opt['video']
-        vidcap = cv2.VideoCapture(video)
-        if not read_ipstream:
-            print('[INFO]Loading video from file...')
-        else:
-            print('[INFO]Loading from the given URL...')
+        vidcap = []
+        for read_ipstream, video in zip(opt['read_ipstream'], opt['video']):
+            vidcap.append(cv2.VideoCapture(video))
+            if not read_ipstream:
+                print('[INFO]Loading video from file...')
+            else:
+                print('[INFO]Loading from the given URL...')
     else:
         print("[INFO] starting video stream...")
         vidcap = cv2.VideoCapture(0)
@@ -102,15 +104,34 @@ def main(opt):
     t=0
     rgb = np.zeros(3)
     start_flag = True
+    num_views = len(vidcap)
     while True:
-        frame = vidcap.read()[1]
         
-        if frame is not None:
-            color = cv2.mean(frame)
-            rgb += np.array([color[2], color[1], color[0]])
+        for i in range(num_views):
+            image = vidcap[i].read()[1]
+            if image is not None:
+                color = cv2.mean(image)
+                rgb += np.array([color[2], color[1], color[0]])
             
-            if(total_frames % skip_frames == 0):
-                rgb = rgb/(skip_frames * 256)
+        if(total_frames % skip_frames == 0):
+
+            if(num_views==1):
+                frame = vidcap[0].read()[1]
+            
+            else:
+                frames = []
+                for i in range(num_views):
+                    image = vidcap[i].read()[1]
+                    if image is not None:
+                        frames.append(image)
+                if(len(frames)==num_views):
+                    if imutils.is_cv3() :
+                        stitcher = cv2.createStitcher() 
+                    else:
+                        stitcher = cv2.Stitcher_create()
+                    (status, frame) = stitcher.stitch(frames)
+            if frame is not None:
+                rgb = rgb/(skip_frames * 256 * num_views)
                 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 (H, W) = frame.shape[:2]
                 count = test(frame, opt, rgb, transform_test, num_workers, label_indice, model_path)
@@ -125,7 +146,6 @@ def main(opt):
                         P_k_1 = 1
                         R = 0.1
                         start_flag = False
-                        
                 if filter_method=='mavg':
                     if not start_flag:
                         c_queue.append(count)
@@ -139,13 +159,15 @@ def main(opt):
                 if cv2.waitKey(25) & 0xFF == ord('q'):
                     break
                 rgb = np.zeros(3)
-            total_frames += 1
+            else:
+                print("[INFO]End of Video feed or Error in streaming")
+                print("[INFO]Exiting...")
+                for vc in vidcap:
+                    vc.release()
+                break
+        total_frames += 1
 
-        else:
-            print("[INFO]End of Video feed or Error in streaming")
-            print("[INFO]Exiting...")
-            vidcap.release()
-            break
+
     end = time()
     print(end - start)
     cv2.destroyAllWindows()
