@@ -103,10 +103,11 @@ def main(opt):
     skip_frames = opt['skip_frames']
     shape = (640, 480)
     writer = None
+    exit_flag = True
+
     ## Uncomment these lines if you want to save the video to your system
     # fourcc = cv2.VideoWriter_fourcc(*'MPEG')
     # writer = cv2.VideoWriter('output.avi',fourcc, 2, shape)
-    exit_flag = True
         
     start = time()
     vidcap = []
@@ -128,9 +129,7 @@ def main(opt):
         start_flag = True
         num_views = len(vidcap)
 
-    
         while exit_flag and stitch:
-            
             for i in range(num_views):
                 image = vidcap[i].read()[1]
                 if image is not None:
@@ -189,14 +188,13 @@ def main(opt):
                     for vc in vidcap:
                         vc.release()
             total_frames += 1
+
     else:
         total_frames = 1
         rgb = np.zeros(3)
         num_views = len(vidcap)
         start_flag = np.ones((num_views), dtype=bool)
         count = np.zeros(num_views)
-        
-
         if filter_method=='kf':
             count_k_1 = np.zeros(num_views)
             P_k_1 = np.ones(num_views)
@@ -253,7 +251,6 @@ def main(opt):
                         for vc in vidcap:
                             vc.release()
                         break
-
                 rgb = np.zeros(3)
             total_frames += 1
 
