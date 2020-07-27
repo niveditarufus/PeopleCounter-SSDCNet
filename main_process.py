@@ -129,7 +129,7 @@ def main(opt):
         start_flag = True
         num_views = len(vidcap)
 
-        while exit_flag and stitch:
+        while exit_flag:
             for i in range(num_views):
                 image = vidcap[i].read()[1]
                 if image is not None:
@@ -155,7 +155,6 @@ def main(opt):
                     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                     frame = cv2.resize(frame, shape)
                     count = test(frame, opt, rgb, transform_test, num_workers, label_indice, model_path)
-                    t += 1
                     if filter_method=='kf':
                         if not start_flag:
                             count, P_k = KalmanFilter(count_k_1, P_k_1, count, R)
@@ -202,7 +201,7 @@ def main(opt):
         elif filter_method=='mavg':
             c_queue = np.empty((num_views,),dtype=object)
 
-        while exit_flag and not stitch:
+        while exit_flag:
             for i in range(num_views):
                 image = vidcap[i].read()[1]
                 if image is not None:

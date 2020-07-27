@@ -27,7 +27,7 @@ if __name__ == '__main__':
         opt['start_webcam'] = False
         opt['read_ipstream'] = None
         opt['filter'] = args.filter
-        opt['stitch'] = False
+        opt['stitch'] = args.stitch
 
         if args.video==None:
             opt['start_webcam'] = True
