@@ -101,12 +101,13 @@ def main(opt):
     opt['label_indice'] = label_indice
     opt['class_num'] = label_indice.size+1
     skip_frames = opt['skip_frames']
-    fourcc = cv2.VideoWriter_fourcc(*'MPEG')
-    writer = cv2.VideoWriter('output.avi',fourcc, 2, (640,480))
-    exit_flag = True
     shape = (640, 480)
+    writer = None
+    ## Uncomment these lines if you want to save the video to your system
+    # fourcc = cv2.VideoWriter_fourcc(*'MPEG')
+    # writer = cv2.VideoWriter('output.avi',fourcc, 2, shape)
+    exit_flag = True
         
-    
     start = time()
     vidcap = []
     if not opt['start_webcam']:
@@ -178,7 +179,8 @@ def main(opt):
                     if cv2.waitKey(25) & 0xFF == ord('q'):
                         exit_flag=False
                         break
-                    writer.write(frame)
+                    if writer is not None:
+                        writer.write(frame)
                     rgb = np.zeros(3)
                 else:
                     exit_flag = False
@@ -242,7 +244,8 @@ def main(opt):
                         if cv2.waitKey(25) & 0xFF == ord('q'):
                             exit_flag=False
                             break
-                        writer.write(img) 
+                        if writer is not None:
+                            writer.write(frame) 
                     else:
                         exit_flag = False
                         print("[INFO]End of Video feed or Error in streaming")
