@@ -12,6 +12,7 @@ if __name__ == '__main__':
     parser.add_argument('--video', default=None, nargs = '+', help='Specify a video path or multiple video path')
     parser.add_argument('--stitch', default=True, help='Specify True if u want the the videos to be stitched in the case of multiple feeds')
     parser.add_argument('--filter', default = None, help='specify a filtering method if required: kf, mavg ')
+    parser.add_argument('--skip_frames', default=30, help='No.of frames to be skipped')
     args = parser.parse_args()
     model_idxlist = {'model1':0,'model2':1,'model3':2}
     model_list = ['model1', 'model2', 'model3']    
@@ -23,12 +24,13 @@ if __name__ == '__main__':
         opt = dict()
         opt['model'] = model_list[di]
         opt['max_list'] = model_max[di]
-        opt['skip_frames'] =  30
+        opt['skip_frames'] =  int(args.skip_frames)
         opt['start_webcam'] = False
         opt['read_ipstream'] = None
         opt['filter'] = args.filter
-        opt['stitch'] = args.stitch
-
+        opt['stitch'] = True
+        if(args.stitch=='False'):
+            opt['stitch'] = False
         if args.video==None:
             opt['start_webcam'] = True
 
