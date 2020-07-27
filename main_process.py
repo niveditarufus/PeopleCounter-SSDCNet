@@ -18,14 +18,6 @@ import queue, threading
 import matplotlib.pyplot as plt
 import imutils
 
-def KalmanFilter(count_k_1, P_k_1, count, R=0.1):
-    count_prior_k = count_k_1
-    P_prior_k = P_k_1
-    K_k = P_prior_k / (P_prior_k + R)
-    count_k = count_prior_k + K_k * (count - count_prior_k)
-    P_k = (1 - K_k) * P_prior_k
-    return count_k, P_k
-
 
 def test(frame, opt, rgb, transform_test, num_workers, label_indice, model_path):
     img = Image.fromarray(frame)
@@ -55,13 +47,36 @@ def test(frame, opt, rgb, transform_test, num_workers, label_indice, model_path)
         # count = torch.round(count)
         return count
 
+def KalmanFilter(count_k_1, P_k_1, count, R=0.1):
+    count_prior_k = count_k_1
+    P_prior_k = P_k_1
+    K_k = P_prior_k / (P_prior_k + R)
+    count_k = count_prior_k + K_k * (count - count_prior_k)
+    P_k = (1 - K_k) * P_prior_k
+    return count_k, P_k
+
 def Moving_avg(count, c_queue, window=20):
     if(len(c_queue)<=window):
         count = mean(c_queue)
     else:
         c_queue.pop(0)
         count = mean(c_queue)
-    return count
+    return round(count)
+
+def majorityElement(count_list):
+    m = -1
+    i = 0
+    ind = -1
+    for j in range(len(count_list)):
+        if i == 0:
+            m = count_list[j]
+            i = 1
+            ind = j
+        elif m == count_list[j]:
+            i = i + 1
+        else:
+            i = i - 1
+    return m, ind
     
 def mean(nums):
     return float(sum(nums)) / max(len(nums), 1)
@@ -76,6 +91,7 @@ def main(opt):
     # read_ipstream = opt['read_ipstream']
     num_workers = opt['num_workers']
     transform_test = []
+    stitch = opt['stitch']
     filter_method = opt['filter']
     
     # set label_indice
@@ -85,11 +101,16 @@ def main(opt):
     opt['label_indice'] = label_indice
     opt['class_num'] = label_indice.size+1
     skip_frames = opt['skip_frames']
+    fourcc = cv2.VideoWriter_fourcc(*'MPEG')
+    writer = cv2.VideoWriter('output.avi',fourcc, 2, (640,480))
+    exit_flag = True
+    shape = (640, 480)
         
     
     start = time()
+    vidcap = []
     if not opt['start_webcam']:
-        vidcap = []
+        
         for read_ipstream, video in zip(opt['read_ipstream'], opt['video']):
             vidcap.append(cv2.VideoCapture(video))
             if not read_ipstream:
@@ -98,75 +119,140 @@ def main(opt):
                 print('[INFO]Loading from the given URL...')
     else:
         print("[INFO] starting video stream...")
-        vidcap = cv2.VideoCapture(0)
+        vidcap.append(cv2.VideoCapture(0))
 
-    total_frames = 1
-    t=0
-    rgb = np.zeros(3)
-    start_flag = True
-    num_views = len(vidcap)
-    while True:
+    if(stitch):
+        total_frames = 1
+        rgb = np.zeros(3)
+        start_flag = True
+        num_views = len(vidcap)
+
+    
+        while exit_flag and stitch:
+            
+            for i in range(num_views):
+                image = vidcap[i].read()[1]
+                if image is not None:
+                    color = cv2.mean(image)
+                    rgb += np.array([color[2], color[1], color[0]])
+            if(total_frames % skip_frames == 0):
+                if(num_views==1):
+                    frame = vidcap[0].read()[1]
+                else:
+                    frames = []
+                    for i in range(num_views):
+                        image = vidcap[i].read()[1]
+                        if image is not None:
+                            frames.append(image)
+                    if(len(frames)==num_views):
+                        if imutils.is_cv3() :
+                            stitcher = cv2.createStitcher() 
+                        else:
+                            stitcher = cv2.Stitcher_create()
+                        (status, frame) = stitcher.stitch(frames)
+                if frame is not None:
+                    rgb = rgb/(skip_frames * 256 * num_views)
+                    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                    frame = cv2.resize(frame, shape)
+                    count = test(frame, opt, rgb, transform_test, num_workers, label_indice, model_path)
+                    t += 1
+                    if filter_method=='kf':
+                        if not start_flag:
+                            count, P_k = KalmanFilter(count_k_1, P_k_1, count, R)
+                            count_k_1, P_k_1 = count, P_k
+                        else:
+                            count_k_1 = count
+                            P_k_1 = 1
+                            R = 0.1
+                            start_flag = False
+                    if filter_method=='mavg':
+                        if not start_flag:
+                            c_queue.append(count)
+                            count = Moving_avg(count, c_queue)
+                        else:
+                            c_queue = []
+                            c_queue.append(count)
+                            start_flag = False
+                    cv2.putText(frame, 'No.of People: '+str(round(count)), (50, 50),cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 2)
+                    cv2.imshow('frame ',frame)
+                    if cv2.waitKey(25) & 0xFF == ord('q'):
+                        exit_flag=False
+                        break
+                    writer.write(frame)
+                    rgb = np.zeros(3)
+                else:
+                    exit_flag = False
+                    print("[INFO]End of Video feed or Error in streaming")
+                    print("[INFO]Exiting...")
+                    for vc in vidcap:
+                        vc.release()
+            total_frames += 1
+    else:
+        total_frames = 1
+        rgb = np.zeros(3)
+        num_views = len(vidcap)
+        start_flag = np.ones((num_views), dtype=bool)
+        count = np.zeros(num_views)
         
-        for i in range(num_views):
-            image = vidcap[i].read()[1]
-            if image is not None:
-                color = cv2.mean(image)
-                rgb += np.array([color[2], color[1], color[0]])
-            
-        if(total_frames % skip_frames == 0):
 
-            if(num_views==1):
-                frame = vidcap[0].read()[1]
-            
-            else:
-                frames = []
+        if filter_method=='kf':
+            count_k_1 = np.zeros(num_views)
+            P_k_1 = np.ones(num_views)
+            P_k = np.zeros(num_views)
+        elif filter_method=='mavg':
+            c_queue = np.empty((num_views,),dtype=object)
+
+        while exit_flag and not stitch:
+            for i in range(num_views):
+                image = vidcap[i].read()[1]
+                if image is not None:
+                    color = cv2.mean(image)
+                    rgb += np.array([color[2], color[1], color[0]])
+            if(total_frames % skip_frames == 0):
                 for i in range(num_views):
-                    image = vidcap[i].read()[1]
-                    if image is not None:
-                        frames.append(image)
-                if(len(frames)==num_views):
-                    if imutils.is_cv3() :
-                        stitcher = cv2.createStitcher() 
+                    frame = vidcap[i].read()[1]
+                    if frame is not None:
+                        rgb = rgb/(skip_frames * 256 * num_views)
+                        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                        frame = cv2.resize(frame, shape)
+                        if(i==0):
+                            img = frame
+                        count[i] = test(frame, opt, rgb, transform_test, num_workers, label_indice, model_path)
+                        if filter_method=='kf':
+                            if not start_flag[i]:
+                                count[i], P_k[i] = KalmanFilter(count_k_1[i], P_k_1[i], count[i], R)
+                                count_k_1[i], P_k_1[i] = count[i], P_k[i]
+                            else:
+                                count_k_1[i]=count[i]
+                                P_k_1[i] = 1
+                                R = 0.1
+                                start_flag[i] = False
+                        elif filter_method=='mavg':
+                            if not start_flag[i]:
+                                c_queue[i].append(count[i])
+                                count[i] = Moving_avg(count[i], c_queue[i])
+                            else:
+                                c_queue[i] =[]
+                                c_queue[i].append(count[i])
+                                start_flag[i] = False
+                        final_count, ind = majorityElement(count)
+                        
+                        cv2.putText(img, 'No.of People: '+str(round(final_count)), (50, 50),cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 2)
+                        cv2.imshow('frame ',img)
+                        if cv2.waitKey(25) & 0xFF == ord('q'):
+                            exit_flag=False
+                            break
+                        writer.write(img) 
                     else:
-                        stitcher = cv2.Stitcher_create()
-                    (status, frame) = stitcher.stitch(frames)
-            if frame is not None:
-                rgb = rgb/(skip_frames * 256 * num_views)
-                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                (H, W) = frame.shape[:2]
-                count = test(frame, opt, rgb, transform_test, num_workers, label_indice, model_path)
-                t += 1
-                if filter_method=='kf':
-                    if not start_flag:
-                        count, P_k = KalmanFilter(count_k_1, P_k_1, count, R)
-                        count_k_1, P_k_1 = count, P_k
-                    else:
-                        count_k_1 = count
-                        count_k_1 = 0
-                        P_k_1 = 1
-                        R = 0.1
-                        start_flag = False
-                if filter_method=='mavg':
-                    if not start_flag:
-                        c_queue.append(count)
-                        count = Moving_avg(count, c_queue)
-                    else:
-                        c_queue = []
-                        c_queue.append(count)
-                        start_flag = False
-                cv2.putText(frame, 'No.of People: '+str(round(count)), (50, 50),cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 2)
-                cv2.imshow('frame ',frame)
-                if cv2.waitKey(25) & 0xFF == ord('q'):
-                    break
-                rgb = np.zeros(3)
-            else:
-                print("[INFO]End of Video feed or Error in streaming")
-                print("[INFO]Exiting...")
-                for vc in vidcap:
-                    vc.release()
-                break
-        total_frames += 1
+                        exit_flag = False
+                        print("[INFO]End of Video feed or Error in streaming")
+                        print("[INFO]Exiting...")
+                        for vc in vidcap:
+                            vc.release()
+                        break
 
+                rgb = np.zeros(3)
+            total_frames += 1
 
     end = time()
     print(end - start)

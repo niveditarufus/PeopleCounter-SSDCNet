@@ -9,7 +9,8 @@ from main_process import main
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='model_setting')
     parser.add_argument('--model', default='model1', help='choose model: model1, model2, model3')
-    parser.add_argument('--video', nargs = '+', help='Specify a video path or multiple video path')
+    parser.add_argument('--video', default=None, nargs = '+', help='Specify a video path or multiple video path')
+    parser.add_argument('--stitch', default=True, help='Specify True if u want the the videos to be stitched in the case of multiple feeds')
     parser.add_argument('--filter', default = None, help='specify a filtering method if required: kf, mavg ')
     args = parser.parse_args()
     model_idxlist = {'model1':0,'model2':1,'model3':2}
@@ -22,10 +23,11 @@ if __name__ == '__main__':
         opt = dict()
         opt['model'] = model_list[di]
         opt['max_list'] = model_max[di]
-        opt['skip_frames'] =  20
+        opt['skip_frames'] =  30
         opt['start_webcam'] = False
         opt['read_ipstream'] = None
         opt['filter'] = args.filter
+        opt['stitch'] = False
 
         if args.video==None:
             opt['start_webcam'] = True
