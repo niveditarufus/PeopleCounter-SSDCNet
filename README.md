@@ -35,12 +35,12 @@ You can also supply the a list of videos which have overlapping views. This migh
 ###### Example:  
 `python3 Run.py --model model3 --video f1.mp4 f2.mp4 --filter kf --skip_frames 30`  
 
-If the videos are just from different perspectives and not really overlapping you will have to set the `stitch` parameter to `False` while parsing. This employs Boyer-Moore's Majority Voting algorithm (Link)[https://www.cs.utexas.edu/~moore/best-ideas/mjrty/] for the count of people.  
+If the videos are just from different perspectives and not really overlapping you will have to set the `stitch` parameter to `False` while parsing. This employs Boyer-Moore's Majority Voting algorithm [Link](https://www.cs.utexas.edu/~moore/best-ideas/mjrty/) for the count of people.  
 ###### Example:  
 `python3 Run.py --model model3 --video f1.mp4 f2.mp4 --filter kf --skip_frames 30 --stitch False`  
 
 ### References
-[SS-DCNet](https://arxiv.org/abs/2001.01886)  
-[SS-DCNET code](https://github.com/xhp-hust-2018-2011/SS-DCNet) 
-[Image stitching](http://matthewalunbrown.com/papers/ijcv2007.pdf)
-[Boyer-Moore's Majority Voting algorithm](https://www.cs.utexas.edu/~moore/best-ideas/mjrty/)
+1. [SS-DCNet](https://arxiv.org/abs/2001.01886)  
+2. [SS-DCNET code](https://github.com/xhp-hust-2018-2011/SS-DCNet) 
+3. [Image stitching](http://matthewalunbrown.com/papers/ijcv2007.pdf)
+4. [Boyer-Moore's Majority Voting algorithm](https://www.cs.utexas.edu/~moore/best-ideas/mjrty/)
