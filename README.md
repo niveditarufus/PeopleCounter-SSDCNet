@@ -32,7 +32,7 @@ python3 Run.py [--model MODEL] [--video LIST OF VIDEO FILES/URL] [--filter METHO
 if a video(file/URL) was not supplied, a reference to the webcam will be grabbed.  
 
 You can also supply the a list of videos which have overlapping views. This might cause some delay in relaying the count of people, so change the `skip_frames` parameter accordingly. This employs an [image stitching](http://matthewalunbrown.com/papers/ijcv2007.pdf) on the images(as shown below) before returning the value of the count of people. 
-![](images/image1.jpg)  
+![](images/image1.jpg)
 ![](images/image2.jpg)  
 ![](images/stitched.jpg)  
 
