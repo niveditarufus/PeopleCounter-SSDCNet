@@ -31,9 +31,10 @@ python3 Run.py [--model MODEL] [--video LIST OF VIDEO FILES/URL] [--filter METHO
 `python3 Run.py --model model3 --video m1.mp4 --filter kf --skip_frames 30`  
 if a video(file/URL) was not supplied, a reference to the webcam will be grabbed.  
 
-You can also supply the a list of videos which have overlapping views. This might cause some delay in relaying the count of people, so change the `skip_frames` parameter accordingly. This employs an [image stitching](http://matthewalunbrown.com/papers/ijcv2007.pdf) on the images(as shown below) before returning the value of the count of people. 
+You can also supply the a list of videos which have overlapping views.  
 ![](images/image1.jpg)
 ![](images/image2.jpg)  
+This might cause some delay in relaying the count of people, so change the `skip_frames` parameter accordingly. This employs an [image stitching](http://matthewalunbrown.com/papers/ijcv2007.pdf) on the images(as shown below) before returning the value of the count of people.   
 ![](images/stitched.jpg)  
 
 
@@ -41,7 +42,7 @@ You can also supply the a list of videos which have overlapping views. This migh
 `python3 Run.py --model model3 --video f1.mp4 f2.mp4 --filter kf --skip_frames 30`  
 
 If the videos are just from different perspectives(as shown below) and not really overlapping you will have to set the `stitch` parameter to `False` while parsing.  
-![](images/cam1.jpg)  
+![](images/cam1.jpg)
 ![](images/cam2.jpg)  
 This employs Boyer-Moore's Majority Voting algorithm [(Link)](https://www.cs.utexas.edu/~moore/best-ideas/mjrty/) for the count of people.  
 ###### Example:  
