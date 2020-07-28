@@ -64,6 +64,9 @@ def Moving_avg(count, c_queue, window=20):
     return round(count)
 
 def majorityElement(count_list):
+    x = np.unique(np.round(count_list))
+    if(len(x)==len(count_list) and np.count_nonzero(x)==len(count_list)):
+        return np.round(np.mean(x))
     m = -1
     i = 0
     ind = -1
@@ -76,7 +79,7 @@ def majorityElement(count_list):
             i = i + 1
         else:
             i = i - 1
-    return m, ind
+    return m
     
 def mean(nums):
     return float(sum(nums)) / max(len(nums), 1)
@@ -101,7 +104,7 @@ def main(opt):
     opt['label_indice'] = label_indice
     opt['class_num'] = label_indice.size+1
     skip_frames = opt['skip_frames']
-    shape = (640, 480)
+    shape = (1024, 768)
     writer = None
     exit_flag = True
 
@@ -234,7 +237,7 @@ def main(opt):
                                 c_queue[i] =[]
                                 c_queue[i].append(count[i])
                                 start_flag[i] = False
-                        final_count, ind = majorityElement(count)
+                        final_count = majorityElement(count)
                         
                         cv2.putText(img, 'No.of People: '+str(round(final_count)), (50, 50),cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 2)
                         cv2.imshow('frame ',img)
